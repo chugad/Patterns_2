@@ -46,7 +46,7 @@ public abstract class UserGenerator {
     }
 
     public static CreateUser getCreateBlockedUser() {
-        CreateUser blockedUser = new CreateUser("qwerty", "password1", "blocked");
+        CreateUser blockedUser = new CreateUser(login, password, "blocked");
         return blockedUser;
     }
 
