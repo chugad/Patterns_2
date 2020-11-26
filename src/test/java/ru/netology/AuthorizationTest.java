@@ -1,50 +1,58 @@
 package ru.netology;
 
-import com.sun.tools.xjc.reader.xmlschema.bindinfo.BIConversion;
+import lombok.val;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
+import static ru.netology.UserGenerator.getActiveRegisteredUser;
+import static ru.netology.UserGenerator.getBlockedRegisteredUser;
+import static ru.netology.UserGenerator.getWrongNameUser;
 
 public class AuthorizationTest {
 
+    @BeforeEach
+    void setUp() {
+        open("http://localhost:9999");
+    }
+
     @Test
     void happyPath() {
-        UserInfo.User.setUpActiveUser();
+        val validUser = getActiveRegisteredUser();
 
-        open("http://localhost:9999");
-        $("[data-test-id=login] input").setValue(UserInfo.User.getLogin());
-        $("[data-test-id=password] input").setValue(UserInfo.User.getPassword());
+        $("[data-test-id=login] input").setValue(validUser.getLogin());
+        $("[data-test-id=password] input").setValue(validUser.getPassword());
         $("[data-test-id='action-login']").click();
         $$("h2").findBy(text("Личный кабинет")).shouldBe(visible);
     }
 
     @Test
     void shouldNotSussesLoginActiveUser_SameNameAnotherPassword() {
-        UserInfo.User.setUpActiveUser();
-        open("http://localhost:9999");
-        $("[data-test-id=login] input").setValue(UserInfo.User.getLogin());
-        $("[data-test-id=password] input").setValue(UserInfo.User.getPassword2());
+        val validUser = getActiveRegisteredUser();
+        val wrongNameUser = getWrongNameUser();
+        $("[data-test-id=login] input").setValue(validUser.getLogin());
+        $("[data-test-id=password] input").setValue(wrongNameUser.getPassword());
         $("[data-test-id='action-login']").click();
         $("[data-test-id=error-notification] .notification__content").shouldHave(text("Неверно указан логин или пароль")).shouldBe(visible);
     }
 
     @Test
     void shouldNotSussesLoginActiveUser_AnotherNameSamePassword() {
-        UserInfo.User.setUpActiveUser();
-        open("http://localhost:9999");
-        $("[data-test-id=login] input").setValue(UserInfo.User.getLogin2());
-        $("[data-test-id=password] input").setValue(UserInfo.User.getPassword());
+        val validUser = getActiveRegisteredUser();
+        val wrongNameUser = getWrongNameUser();
+        $("[data-test-id=login] input").setValue(wrongNameUser.getLogin());
+        $("[data-test-id=password] input").setValue(validUser.getPassword());
         $("[data-test-id='action-login']").click();
         $("[data-test-id=error-notification] .notification__content").shouldHave(text("Неверно указан логин или пароль")).shouldBe(visible);
     }
 
     @Test
     void shouldNotSussesLoginBlockedUser() {
-        UserInfo.User.setUpBlockedUser();
-        open("http://localhost:9999");
-        $("[data-test-id=login] input").setValue(UserInfo.User.getLogin());
-        $("[data-test-id=password] input").setValue(UserInfo.User.getPassword());
+        val blockedUser = getBlockedRegisteredUser();
+        $("[data-test-id=login] input").setValue(blockedUser.getLogin());
+        $("[data-test-id=password] input").setValue(blockedUser.getPassword());
         $("[data-test-id='action-login']").click();
         $("[data-test-id=error-notification] .notification__content").shouldHave(text("Пользователь заблокирован")).shouldBe(visible);
     }
