@@ -49,6 +49,11 @@ public class UserGenerator {
         return user;
     }
 
+    public static UserInfo getNotRegisteredUser() {
+        val user = new UserInfo(getLogin(), getPassword(), "active");
+        return user;
+    }
+
     public static UserInfo getBlockedRegisteredUser() {
         val user = new UserInfo(getLogin(), getPassword(), "blocked");
         setUpUser(user);
@@ -60,6 +65,12 @@ public class UserGenerator {
         setUpUser(new UserInfo(getLogin(), password, "active"));
         return new UserInfo(getLogin(), password, "active");
     }
+
+    public static UserInfo getWrongPasswordUser() {
+        val login = getLogin();
+        setUpUser(new UserInfo(login, getPassword(), "active"));
+        return new UserInfo(login, getPassword(), "active");
+        }
 
     @Value
     public static class UserInfo {
