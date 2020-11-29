@@ -56,7 +56,7 @@ public class AuthorizationTest {
         $("[data-test-id='action-login']").click();
         $("[data-test-id=error-notification] .notification__content").shouldHave(text("Пользователь заблокирован")).shouldBe(visible);
     }
-
+    @Test
     void shouldNotSussesLoginNotregisteredUser() {
         val invalidUser = getNotRegisteredUser();
         $("[data-test-id=login] input").setValue(invalidUser.getLogin());
